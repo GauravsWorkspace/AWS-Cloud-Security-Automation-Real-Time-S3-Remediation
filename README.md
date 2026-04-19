@@ -1,43 +1,68 @@
-# AWS Cloud Security Automation: Real-Time S3 Remediation Lab
+# AWS Cloud Security Automation: Real-Time S3 Remediation
 
-## 📌 Project Overview
-As a final-semester MCA student specializing in Cybersecurity, I developed this project to demonstrate **Event-Driven Security** and **Automated Incident Response** within an AWS Cloud environment. 
+## 🛡️ Executive Summary
+Misconfigured S3 buckets are a leading cause of data leaks. In this project, I engineered a **Cloud Security Posture Management (CSPM)** tool that automatically detects and remediates public S3 bucket violations in real-time. 
 
-The system identifies unauthorized S3 bucket public access and automatically remediates the configuration in under 60 seconds, significantly reducing the "window of exposure" for sensitive data.
+By leveraging event-driven architecture, the system reduces the window of exposure from hours to less than **60 seconds** without human intervention.
 
 ---
 
 ## 🏗️ Technical Architecture
-The automation follows a professional-grade security workflow:
-1. **Audit:** Initial baseline audit performed using **Prowler** (Kali Linux).
-2. **Detection:** **AWS CloudTrail** captures the `PutBucketPublicAccessBlock` API call.
-3. **Filtering:** **Amazon EventBridge** monitors for specific security violations using a JSON event pattern.
-4. **Remediation:** An **AWS Lambda** function (Python 3.12) is triggered to re-enforce the "Block All Public Access" policy via the Boto3 SDK.
+The system utilizes a "Detection-Response" loop:
+1. **Trigger:** An unauthorized user/process changes S3 bucket permissions.
+2. **Detection:** **AWS CloudTrail** logs the `PutBucketPublicAccessBlock` event.
+3. **Filtering:** **Amazon EventBridge** matches the event against a security rule.
+4. **Remediation:** An **AWS Lambda** (Python 3.12) function executes, re-applying the "Block All Public Access" configuration via the **Boto3 SDK**.
+
+
 
 ---
 
-## 🛠️ Technologies Used
-* **Platform:** AWS (S3, Lambda, EventBridge, CloudTrail, IAM, CloudWatch)
-* **Security Tooling:** Prowler Open Source Security Audit
-* **Language:** Python 3.12 (Boto3)
-* **Environment:** Kali Linux (Primary OS)
-* **Hardware:** MSI GF63 Laptop
+## 🛠️ Tech Stack & Environment
+* **Cloud Platform:** Amazon Web Services (AWS)
+* **Programming:** Python 3.12 (Boto3 Library)
+* **Security Audit:** Prowler (CIS Benchmark Compliance)
+* **Operating System:** Kali Linux
+* **Hardware:** MSI GF63
 
 ---
 
-## 📜 Lambda Function (The "Fixer")
+## 🚀 Proof of Work (The Evidence)
+
+To verify the effectiveness of the automation, I conducted a live simulation. Below is the technical evidence captured during the remediation lifecycle.
+
+### 1. The Vulnerability (Before)
+I simulated a security breach by disabling the "Block all public access" settings on a production-style bucket.
+* **Status:** 🔴 CRITICAL - Public Access Enabled
+* **Evidence:** [View "Before" Screenshot](./assets/before.png)
+
+### 2. The Remediation "Heartbeat" (During)
+The **Lambda Invocations** graph shows the exact millisecond my Python code was triggered by EventBridge. This proves the system is responsive and reliable.
+* **Metric:** 1 Success (0% Error Rate)
+* **Evidence:** ![Lambda Invocation Spike](./assets/metrics.png)
+
+### 3. Technical Audit Trail (Logs)
+The **CloudWatch Logs** capture the function's internal logic as it identifies the target bucket and enforces security.
+* **Log Output:** `Alert! Public access detected on: [bucket-name]. Remediating...`
+* **Evidence:** ![CloudWatch Log Entry](./assets/logs.png)
+
+### 4. The Secure State (After)
+The S3 bucket permissions were automatically reverted to the "Private" state by the Lambda function.
+* **Status:** 🟢 SECURE - Block All Public Access: ON
+* **Evidence:** [View "After" Screenshot](./assets/after.png)
+
+---
+
+## 📜 Remediation Script
 ```python
 import boto3
 
 def lambda_handler(event, context):
     s3 = boto3.client('s3')
-    
-    # Extract bucket name from the CloudTrail event detail
     bucket_name = event['detail']['requestParameters']['bucketName']
     
     print(f"Alert! Public access detected on: {bucket_name}. Remediating...")
     
-    # Re-apply the 'Block All Public Access' settings immediately
     s3.put_public_access_block(
         Bucket=bucket_name,
         PublicAccessBlockConfiguration={
@@ -47,6 +72,4 @@ def lambda_handler(event, context):
             'RestrictPublicBuckets': True
         }
     )
-    return {"status": "Success", "bucket": bucket_name}
-
-
+    return {"status": "Success", "remediated_bucket": bucket_name}
