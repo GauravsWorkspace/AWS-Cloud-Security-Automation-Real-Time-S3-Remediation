@@ -14,8 +14,6 @@ The system utilizes a "Detection-Response" loop:
 3. **Filtering:** **Amazon EventBridge** matches the event against a security rule.
 4. **Remediation:** An **AWS Lambda** (Python 3.12) function executes, re-applying the "Block All Public Access" configuration via the **Boto3 SDK**.
 
-
-
 ---
 
 ## 🛠️ Tech Stack & Environment
@@ -32,24 +30,34 @@ The system utilizes a "Detection-Response" loop:
 To verify the effectiveness of the automation, I conducted a live simulation. Below is the technical evidence captured during the remediation lifecycle.
 
 ### 1. The Vulnerability (Before)
-I simulated a security breach by disabling the "Block all public access" settings on a production-style bucket.
-* **Status:** 🔴 CRITICAL - Public Access Enabled
-* **Evidence:** [View "Before" Screenshot](./assets/before.png)
+I simulated a security breach by disabling the "Block all public access" settings.
+**Status:** 🔴 CRITICAL - Public Access Enabled
+
+![Initial Violation](./assets/before.png)
+
+---
 
 ### 2. The Remediation "Heartbeat" (During)
-The **Lambda Invocations** graph shows the exact millisecond my Python code was triggered by EventBridge. This proves the system is responsive and reliable.
-* **Metric:** 1 Success (0% Error Rate)
-* **Evidence:** ![Lambda Invocation Spike](./assets/metrics.png)
+The **Lambda Invocations** graph shows the exact millisecond my Python code was triggered.
+**Metric:** 1 Success (0% Error Rate)
+
+![Lambda Invocation Spike](./assets/metrics.png)
+
+---
 
 ### 3. Technical Audit Trail (Logs)
-The **CloudWatch Logs** capture the function's internal logic as it identifies the target bucket and enforces security.
-* **Log Output:** `Alert! Public access detected on: [bucket-name]. Remediating...`
-* **Evidence:** ![CloudWatch Log Entry](./assets/logs.png)
+The **CloudWatch Logs** capture the function's internal logic as it identifies the target and enforces security.
+**Log Output:** `Alert! Public access detected on: [bucket-name]. Remediating...`
+
+![CloudWatch Log Entry](./assets/logs.png)
+
+---
 
 ### 4. The Secure State (After)
 The S3 bucket permissions were automatically reverted to the "Private" state by the Lambda function.
-* **Status:** 🟢 SECURE - Block All Public Access: ON
-* **Evidence:** [View "After" Screenshot](./assets/after.png)
+**Status:** 🟢 SECURE - Block All Public Access: ON
+
+![S3 Auto-Secured](./assets/after.png)
 
 ---
 
