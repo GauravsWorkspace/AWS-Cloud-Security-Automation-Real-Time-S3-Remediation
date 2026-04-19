@@ -49,25 +49,4 @@ def lambda_handler(event, context):
     )
     return {"status": "Success", "bucket": bucket_name}
 
-## 📊 Proof of Remediation
 
-Note: Full visual evidence is located in the /assets directory.
-1. Detection via CloudWatch
-
-The system successfully logs the remediation event, providing the SOC team with immediate visibility.
-2. Real-Time Automation Metrics
-
-The Lambda Invocations graph confirms that the code executed the exact moment the misconfiguration occurred.
-3. Before vs After
-Configuration	Status	Visual Proof
-Initial Violation	Public (Vulnerable)	View Screenshot
-Post-Remediation	Private (Secure)	View Screenshot
-🚀 Key Learning Outcomes
-
-    IAM Least Privilege: Configured granular IAM roles for Lambda execution.
-
-    Incident Response: Built a closed-loop system for real-time threat mitigation.
-
-    Compliance as Code: Used Prowler to validate adherence to AWS security best practices (CIS Benchmarks).
-
-Contact: [Your Name] | MCA Graduate (Cybersecurity) | SOC Analyst Aspirant
