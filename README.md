@@ -1,35 +1,4 @@
-## 🚀 Proof of Work (Evidence)
-
-To verify the effectiveness of the automation, I conducted a live simulation. Below is the technical evidence captured during the remediation lifecycle.
-
-### 1. The Vulnerability (Initial State)
-I simulated a security breach by disabling the "Block all public access" settings. This created a critical security gap.
-**Status:** 🔴 CRITICAL - Public Access Enabled
-
-![S3 Public Access Violation](./assets/before.png)
-
----
-
-### 2. Detection & Remediation (The Logic)
-The **CloudWatch Logs** capture the exact moment the Lambda function identified the target bucket and enforced security.
-**Output:** `Alert! Public access detected... Remediating...`
-
-![CloudWatch Audit Logs](./assets/logs.png)
-
----
-
-### 3. Real-Time Automation Metrics
-This graph shows the **Invocation Spike**. It proves the system is event-driven and responded instantly to the threat without manual input.
-
-![Lambda Invocation Spike](./assets/metrics.png)
-
----
-
-### 4. The Secure State (Final Result)
-The S3 bucket permissions were automatically reverted to the "Private" state. The automation successfully enforced the security baseline.
-**Status:** 🟢 SECURE - Block All Public Access: ON
-
-![S3 Auto-Secured](./assets/after.png)# AWS Cloud Security Automation: Real-Time S3 Remediation
+# AWS Cloud Security Automation: Real-Time S3 Remediation
 
 ## 🛡️ Executive Summary
 Misconfigured S3 buckets are a leading cause of data leaks. In this project, I engineered a **Cloud Security Posture Management (CSPM)** tool that automatically detects and remediates public S3 bucket violations in real-time. 
